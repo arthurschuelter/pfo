@@ -23,14 +23,14 @@ mapping = {
   "Y": "P",
 }
 
-seq= [
+seq = [
   'YGGFM',
   "TTCCPSIVARSNFNVCRLPGTPEAICATYTGCIIIPGATCPGDYAN",
   "RPRTAFSSEQLARLKREFNENRYLTERRRQQLSSELGLNEAQIKIWFQNKRAKI"
 ]
 
 for s in seq:
-  value = ''
-  for ch in s:
-    value += mapping[ch]
-  print(f"({len(value)}) {value}")
+    value = ''
+    for ch in s:
+        value += mapping[ch]
+    print(f"({len(value)}) {value}")

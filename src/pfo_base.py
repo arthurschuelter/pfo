@@ -28,9 +28,6 @@ class PFOBase:
         self.energy_history: list[float] = []
         self.var_bound = [(0, 5)] * (self.length - 1)  # n-1 moves for n residues
 
-        # [TO DO] Remove this
-        self.model = None
-
         # [TO DO] aminoacids to HP
         if not all(aa in "HP" for aa in self.sequence):
             raise ValueError("Sequence must contain only 'H' and 'P' residues")
@@ -119,40 +116,40 @@ class PFOBase:
     #     return np.sqrt(np.mean(distances_squared))
 
     # SIMULATED ANNEALING SUPPORT
-    def generate_random_valid_moves(
-        self, max_attempts: int = 1000
-    ) -> Optional[np.ndarray]:
-        """Generate a random valid move sequence"""
-        for attempt in range(max_attempts):
-            moves = np.random.randint(0, 6, size=self.length - 1)
-            conformation = self.moves_to_conformation(moves)
-            if conformation is not None:
-                return moves
-        return None
+    # def generate_random_valid_moves(
+    #     self, max_attempts: int = 1000
+    # ) -> Optional[np.ndarray]:
+    #     """Generate a random valid move sequence"""
+    #     for attempt in range(max_attempts):
+    #         moves = np.random.randint(0, 6, size=self.length - 1)
+    #         conformation = self.moves_to_conformation(moves)
+    #         if conformation is not None:
+    #             return moves
+    #     return None
 
-    def perturb_conformation(
-        self,
-        moves: np.ndarray,
-        perturbation_strength: float = 0.1,
-        max_attempts: int = 50,
-    ) -> Optional[np.ndarray]:
-        """Perturb a conformation for simulated annealing"""
-        if moves is None or len(moves) != self.length - 1:
-            return None
+    # def perturb_conformation(
+    #     self,
+    #     moves: np.ndarray,
+    #     perturbation_strength: float = 0.1,
+    #     max_attempts: int = 50,
+    # ) -> Optional[np.ndarray]:
+    #     """Perturb a conformation for simulated annealing"""
+    #     if moves is None or len(moves) != self.length - 1:
+    #         return None
 
-        for attempt in range(max_attempts):
-            new_moves = moves.copy()
-            num_to_change = max(1, int(perturbation_strength * len(moves)))
-            positions = np.random.choice(len(moves), size=num_to_change, replace=False)
+    #     for attempt in range(max_attempts):
+    #         new_moves = moves.copy()
+    #         num_to_change = max(1, int(perturbation_strength * len(moves)))
+    #         positions = np.random.choice(len(moves), size=num_to_change, replace=False)
 
-            for pos in positions:
-                new_moves[pos] = np.random.randint(0, 6)
+    #         for pos in positions:
+    #             new_moves[pos] = np.random.randint(0, 6)
 
-            conformation = self.moves_to_conformation(new_moves)
-            if conformation is not None:
-                return new_moves
+    #         conformation = self.moves_to_conformation(new_moves)
+    #         if conformation is not None:
+    #             return new_moves
 
-        return self.generate_random_valid_moves()
+    #     return self.generate_random_valid_moves()
 
     def get_results_summary(self, title):
         """Print summary of optimization results"""
@@ -163,16 +160,6 @@ class PFOBase:
         print(f"Length: {self.length}")
         print(f"Search space: 6^{self.length-1} = {6**(self.length-1):.2e}")
         print(f"Total function evaluations: {self.evaluation_count}")
-
-        if hasattr(self.model, "best_function"):
-            print(f"Best fitness found: {self.model.best_function:.4f}")
-            print(
-                f"Best H-H contacts: {-int(self.calculate_energy(self.best_conformation))}"
-            )
-
-        print("AQUI ", self.model)
-        if hasattr(self.model, "report"):
-            print(f"Convergence generation: {len(self.model.report)}")
 
         print("=" * 60)
 
@@ -282,9 +269,3 @@ class PFOBase:
         print(f"Sequence: {self.sequence}")
         print(f"Length: {self.length}")
         print(f"Search space size: 6^{self.length-1} = {6**(self.length-1):.2e}")
-
-    def get_ga_convergence_data(self):
-        """Extract convergence data from GA model"""
-        if hasattr(self.model, "report"):
-            return list(range(len(self.model.report))), self.model.report
-        return [], []

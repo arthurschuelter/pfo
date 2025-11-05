@@ -21,14 +21,6 @@ class TestParametrized:
         assert model.sequence == sequence
         assert model.length == len(sequence)
 
-    @pytest.mark.parametrize("sequence", ["HP", "HPH", "HPHPH"])
-    def test_random_generation_various_lengths(self, sequence):
-        model = PFOBase(sequence)
-        moves = model.generate_random_valid_moves()
-
-        assert moves is not None
-        assert len(moves) == len(sequence) - 1
-
     @pytest.mark.parametrize(
         "direction_idx,expected",
         [

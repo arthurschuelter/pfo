@@ -1,7 +1,7 @@
 # python3 -m venv env
 # source env/bin/activate
 # pip3 install -r requirements.txt
-# python3 main.py
+# python3 src/main.py
 # pip3 freeze > requirements.txt
 # deactivate
 # --------------------------------------------------------
@@ -28,7 +28,6 @@ def optimize_ga(sequence: str) -> PFOBase:
     if hp_model.best_conformation is not None:
         hp_model.visualize_best("Best 3D HP Conformation (GA)")
 
-    hp_model.model = ga_model
     hp_model.get_results_summary("GENETIC ALGORITHM")
 
     return hp_model
