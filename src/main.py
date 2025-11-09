@@ -1,17 +1,16 @@
 # python3 -m venv env
 # source env/bin/activate
 # pip3 install -r requirements.txt
-# python3 main.py
+# python3 src/main.py
 # pip3 freeze > requirements.txt
 # deactivate
 # --------------------------------------------------------
 import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
 from geneticalgorithm2 import geneticalgorithm2 as ga
 
 from pfo_base import PFOBase
-from pfo_simulated_annealing import HP3DSimulatedAnnealing
+from pfo_pso import HP3DParticleSwarm
+from pfo_sa import HP3DSimulatedAnnealing
 
 # --------------------------------------------------------
 
@@ -28,7 +27,6 @@ def optimize_ga(sequence: str) -> PFOBase:
     if hp_model.best_conformation is not None:
         hp_model.visualize_best("Best 3D HP Conformation (GA)")
 
-    hp_model.model = ga_model
     hp_model.get_results_summary("GENETIC ALGORITHM")
 
     return hp_model
@@ -56,20 +54,13 @@ def instantiate_ga(hp_model: PFOBase):
 
 
 def optimize_sa(sequence):
-    """Optimize using Simulated Annealing"""
     print("Optimizing with Simulated Annealing...")
     hp_model = PFOBase(sequence, "Simulated Annealing")
     hp_model.print_header()
 
     sa_solver = HP3DSimulatedAnnealing(hp_model)
-
-    # Configure annealing schedule
-    sa_solver.Tmax = 100.0  # Maximum temperature
-    sa_solver.Tmin = 0.01  # Minimum temperature
-    sa_solver.steps = 10000  # Reduced for faster comparison
-    sa_solver.updates = 500  # Update frequency
-
-    best_state, best_energy = sa_solver.anneal()
+    sa_solver.set_parameters()
+    best_state, best_energy = sa_solver.optimize()
 
     sa_solver.get_results_summary("SIMULATED ANNEALING")
 
@@ -83,8 +74,28 @@ def optimize_sa(sequence):
     return hp_model
 
 
+def optimize_pso(sequence):
+    print("Optimizing with Particle Swarm Optimization...")
+    hp_model = PFOBase(sequence, "Particle Swarm Optimization")
+    hp_model.print_header()
+
+    pso_solver = HP3DParticleSwarm(hp_model)
+    pso_solver.set_parameters()
+    best_moves, best_energy = pso_solver.optimize()
+
+    pso_solver.get_results_summary("PARTICLE SWARM OPTIMIZATION")
+
+    hp_model.best_energy = pso_solver.best_energy_value
+    hp_model.energy_history = pso_solver.energy_history
+
+    if pso_solver.best_conformation is not None:
+        hp_model.visualize_best("Best 3D HP Conformation (PSO)")
+
+    return hp_model
+
+
 def compare_algorithms(sequence):
-    """Compare GA and SA performance"""
+    """Compare GA, SA, and PSO performance"""
     print(f"\n{'='*80}")
     print(f"COMPARING ALGORITHMS FOR SEQUENCE: {sequence}")
     print(f"{'='*80}")
@@ -95,38 +106,44 @@ def compare_algorithms(sequence):
     ga_energy = ga_result.best_energy
     ga_evaluations = ga_result.evaluation_count
 
-    # Reset evaluation counter for fair comparison
+    # Run SA
     print("\n" + "-" * 40)
     sa_result = optimize_sa(sequence)
     sa_energy = sa_result.best_energy
     sa_evaluations = sa_result.evaluation_count
-    sa_iterations, sa_energies = len(sa_result.energy_history), sa_result.energy_history
+
+    # Run PSO
+    print("\n" + "-" * 40)
+    pso_result = optimize_pso(sequence)
+    pso_energy = pso_result.best_energy
+    pso_evaluations = pso_result.evaluation_count
 
     # Comparison summary
-    print(f"\n{'='*60}")
+    print(f"\n{'='*80}")
     print("ALGORITHM COMPARISON SUMMARY")
-    print(f"{'='*60}")
+    print(f"{'='*80}")
     print(f"Sequence: {sequence}")
     print(f"Length: {len(sequence)}")
     print()
     print(
         f"{'Algorithm':<15} {'Best Energy':<12} {'H-H Contacts':<12} {'Evaluations':<12}"
     )
-    print("-" * 60)
+    print("-" * 80)
     print(f"{'GA':<15} {ga_energy:<12.2f} {-int(ga_energy):<12} {ga_evaluations:<12}")
     print(f"{'SA':<15} {sa_energy:<12.2f} {-int(sa_energy):<12} {sa_evaluations:<12}")
+    print(
+        f"{'PSO':<15} {pso_energy:<12.2f} {-int(pso_energy):<12} {pso_evaluations:<12}"
+    )
     print()
 
-    if sa_energy < ga_energy:
-        print("🏆 Simulated Annealing found better solution!")
-    elif ga_energy < sa_energy:
-        print("🏆 Genetic Algorithm found better solution!")
-    else:
-        print("🤝 Both algorithms found equally good solutions!")
+    # Find best algorithm
+    results = [("GA", ga_energy), ("SA", sa_energy), ("PSO", pso_energy)]
+    best_algo = min(results, key=lambda x: x[1])
 
-    print(f"{'='*60}")
+    print(f"🏆 {best_algo[0]} found the best solution with energy {best_algo[1]:.2f}!")
+    print(f"{'='*80}")
 
-    return [ga_result, sa_result]
+    return [ga_result, sa_result, pso_result]
 
 
 def main():
@@ -138,7 +155,7 @@ def main():
 
     for sequence in sequences:
         # Choose optimization method
-        method = "compare"  # Options: "ga", "sa", "compare"
+        method = "compare"  # Options: "ga", "sa", "pso", "compare"
         models = []
         labels = []
 
@@ -150,6 +167,10 @@ def main():
             sa_model = optimize_sa(sequence)
             models.append(sa_model.energy_history)
             labels.append(sa_model.label)
+        elif method == "pso":
+            pso_model = optimize_pso(sequence)
+            models.append(pso_model.energy_history)
+            labels.append(pso_model.label)
         elif method == "compare":
             compare_models = compare_algorithms(sequence)
             models = [m.energy_history for m in compare_models]
@@ -158,8 +179,6 @@ def main():
         plot_energy_history(models, labels, sequence)
 
         # Future algorithms can be added here:
-        # elif method == "pso":
-        #     optimize_pso(sequence)
         # elif method == "de":
         #     optimize_differential_evolution(sequence)
 

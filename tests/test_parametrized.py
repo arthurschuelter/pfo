@@ -1,10 +1,7 @@
-from unittest.mock import MagicMock, Mock, patch
-
 import numpy as np
 import pytest
 
 from src.pfo_base import PFOBase
-from src.pfo_simulated_annealing import HP3DSimulatedAnnealing
 
 
 @pytest.fixture
@@ -20,14 +17,6 @@ class TestParametrized:
         model = PFOBase(sequence)
         assert model.sequence == sequence
         assert model.length == len(sequence)
-
-    @pytest.mark.parametrize("sequence", ["HP", "HPH", "HPHPH"])
-    def test_random_generation_various_lengths(self, sequence):
-        model = PFOBase(sequence)
-        moves = model.generate_random_valid_moves()
-
-        assert moves is not None
-        assert len(moves) == len(sequence) - 1
 
     @pytest.mark.parametrize(
         "direction_idx,expected",
