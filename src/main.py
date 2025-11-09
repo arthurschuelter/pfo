@@ -11,9 +11,10 @@ import pandas as pd
 from geneticalgorithm2 import geneticalgorithm2 as ga
 
 from pfo_base import PFOBase
-from pfo_simulated_annealing import HP3DSimulatedAnnealing
+from pfo_sa import HP3DSimulatedAnnealing
 
 # --------------------------------------------------------
+
 
 
 def optimize_ga(sequence: str) -> PFOBase:
@@ -55,7 +56,6 @@ def instantiate_ga(hp_model: PFOBase):
 
 
 def optimize_sa(sequence):
-    """Optimize using Simulated Annealing"""
     print("Optimizing with Simulated Annealing...")
     hp_model = PFOBase(sequence, "Simulated Annealing")
     hp_model.print_header()
@@ -80,6 +80,12 @@ def optimize_sa(sequence):
         pass
 
     return hp_model
+
+
+def optimize_pso(sequence):
+    print("Optimizing with Particle Swarm Optimization...")
+    hp_model = PFOBase(sequence, "Particle Swarm Optimization")
+    hp_model.print_header()
 
 
 def compare_algorithms(sequence):
