@@ -69,7 +69,7 @@ mypy src/ --ignore-missing-imports
 
 Or simply run the Make file:
 ```bash
-make code
+make check
 ```
 
 ### Updating Dependencies
