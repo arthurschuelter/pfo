@@ -1,10 +1,7 @@
-from unittest.mock import MagicMock, Mock, patch
-
 import numpy as np
 import pytest
 
 from src.pfo_base import PFOBase
-from src.pfo_sa import HP3DSimulatedAnnealing
 
 # ============================================================================
 # Fixtures

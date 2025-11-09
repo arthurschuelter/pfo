@@ -1,9 +1,7 @@
 # --------------------------------------------------------
 from typing import Optional
 
-import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 from simanneal import Annealer as sa
 
 from pfo_base import PFOBase

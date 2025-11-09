@@ -1,9 +1,8 @@
 # --------------------------------------------------------
-from typing import Optional, Tuple
+from typing import Tuple
 
 import numpy as np
 import pyswarms as ps
-from pyswarms.utils.plotters import plot_cost_history
 
 from pfo_base import PFOBase
 
@@ -20,7 +19,6 @@ class HP3DParticleSwarm:
         self.best_conformation = None
         self.best_moves: np.ndarray
         self.get_results_summary = pfo_base.get_results_summary
-
 
     def set_parameters(self):
         self.n_particles = 100
@@ -122,9 +120,9 @@ class HP3DParticleSwarm:
         best_moves = np.clip(best_moves, 0, 5)
 
         # Final evaluation to ensure we have the best conformation
-        final_energy = self.evaluate_moves(best_moves)
+        # final_energy = self.evaluate_moves(best_moves)
 
-        print(f"\nPSO Optimization Complete!")
+        print("\nPSO Optimization Complete!")
         print(f"Best Energy: {self.best_energy_value}")
         print(f"H-H Contacts: {-int(self.best_energy_value)}")
         print(f"Total Evaluations: {self.pfo_base.evaluation_count}")
