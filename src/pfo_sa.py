@@ -34,6 +34,15 @@ class HP3DSimulatedAnnealing(sa):
         self.state = initial_moves
         super(HP3DSimulatedAnnealing, self).__init__(self.state)
 
+    def set_parameters(self):
+        self.Tmax = 100.0  # Maximum temperature
+        self.Tmin = 0.01  # Minimum temperature
+        self.steps = 10000  # Reduced for faster comparison
+        self.updates = 500  # Update frequency
+
+    def optimize(self):
+        return self.anneal()
+
     def energy(self) -> float:
         self.pfo_base.evaluation_count += 1
         self.iteration_count += 1
