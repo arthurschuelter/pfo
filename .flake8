@@ -1,5 +1,7 @@
 [flake8]
+max-line-length=127
 exclude =
+  ./tests/test_pfo.py
   __pycache__
   env
   

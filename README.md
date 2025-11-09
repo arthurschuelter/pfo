@@ -44,6 +44,12 @@ When finished, deactivate the environment:
 
 ## Development
 
+### Tests
+Run unit tests
+
+```bash
+make test
+```
 
 ### Code Quality
 Before commiting, please run
@@ -61,9 +67,9 @@ isort --check-only src/ tests/
 mypy src/ --ignore-missing-imports
 ```
 
-Or simply run the bash script:
+Or simply run the Make file:
 ```bash
-./code_quality.sh
+make code
 ```
 
 ### Updating Dependencies
@@ -84,7 +90,6 @@ pfo/
 │   ├── test_fitness.py
 │   ├── test_initialization.py
 │   └── test_parametrized.py
-├── code_quality.sh
 ├── requirements.txt
 └── README.md
 ```
