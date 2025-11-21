@@ -85,11 +85,13 @@ pfo/
 ├── src/
 │   ├── main.py
 │   ├── pfo_base.py
+│   ├── pfo_pso.py
 │   └── pfo_sa.py
 ├── tests/
 │   ├── test_fitness.py
 │   ├── test_initialization.py
 │   └── test_parametrized.py
+├── Makefile
 ├── requirements.txt
 └── README.md
 ```
