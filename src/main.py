@@ -6,6 +6,7 @@
 # deactivate
 # --------------------------------------------------------
 import sys
+import time
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -37,8 +38,8 @@ def optimize_ga(sequence: str) -> PFOBase:
 
 def instantiate_ga(hp_model: PFOBase):
     default_params = {
-        "max_num_iteration": 12000,
-        "population_size": 250,
+        "max_num_iteration": 10000,
+        "population_size": 300,
         "mutation_probability": 0.2,
         "elit_ratio": 0.08,
         "parents_portion": 0.45,
@@ -58,6 +59,8 @@ def instantiate_ga(hp_model: PFOBase):
 
 def optimize_sa(sequence):
     print("Optimizing with Simulated Annealing...")
+    start = time.time()
+
     hp_model = PFOBase(sequence, "Simulated Annealing")
     hp_model.print_header()
 
@@ -70,6 +73,7 @@ def optimize_sa(sequence):
     hp_model.best_energy = sa_solver.best_energy_value
     hp_model.energy_history = sa_solver.energy_history
 
+    print(f"Used time: {(time.time() - start):.2f} seconds")
     if sa_solver.best_conformation is not None:
         hp_model.visualize_best("Best 3D HP Conformation (SA)")
         pass
@@ -79,6 +83,7 @@ def optimize_sa(sequence):
 
 def optimize_pso(sequence):
     print("Optimizing with Particle Swarm Optimization...")
+    start = time.time()
     hp_model = PFOBase(sequence, "Particle Swarm Optimization")
     hp_model.print_header()
 
@@ -91,6 +96,7 @@ def optimize_pso(sequence):
     hp_model.best_energy = pso_solver.best_energy_value
     hp_model.energy_history = pso_solver.energy_history
 
+    print(f"Used time: {(time.time() - start):.2f} seconds")
     if pso_solver.best_conformation is not None:
         hp_model.visualize_best("Best 3D HP Conformation (PSO)")
 
@@ -154,13 +160,14 @@ def main():
 
     sequences = [
         # "PHHHH",
-        "PPPPHPHHHPPPHPHPPHHHPHPHHPHPPPHPHHHHHHPPHHPPHP",
+        # "PPPPHPHHHPPPHPHPPHHHPHPHHPHPPPHPHHHHHHPPHHPPHP",
+        "PHPPHHPPPPHHPHPPPHPPPPPHPPPPPPPHPPPHHHPPHPHPHHHPPPPHPH",
     ]
 
     names = [
         # "1PLW",
-        "1CRN",
-        # "1ENH",
+        # "1CRN",
+        "1ENH",
     ]
 
     for i, sequence in enumerate(sequences):
