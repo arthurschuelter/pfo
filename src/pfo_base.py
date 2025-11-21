@@ -109,47 +109,6 @@ class PFOBase:
         distance = np.linalg.norm(pos1 - pos2)
         return bool(abs(distance - 1.0) < 0.1)
 
-    # def get_compactness(self, conformation: np.ndarray) -> float:
-    #     center = np.mean(conformation, axis=0)
-    #     distances_squared = np.sum((conformation - center) ** 2, axis=1)
-    #     return np.sqrt(np.mean(distances_squared))
-
-    # SIMULATED ANNEALING SUPPORT
-    # def generate_random_valid_moves(
-    #     self, max_attempts: int = 1000
-    # ) -> Optional[np.ndarray]:
-    #     """Generate a random valid move sequence"""
-    #     for attempt in range(max_attempts):
-    #         moves = np.random.randint(0, 6, size=self.length - 1)
-    #         conformation = self.moves_to_conformation(moves)
-    #         if conformation is not None:
-    #             return moves
-    #     return None
-
-    # def perturb_conformation(
-    #     self,
-    #     moves: np.ndarray,
-    #     perturbation_strength: float = 0.1,
-    #     max_attempts: int = 50,
-    # ) -> Optional[np.ndarray]:
-    #     """Perturb a conformation for simulated annealing"""
-    #     if moves is None or len(moves) != self.length - 1:
-    #         return None
-
-    #     for attempt in range(max_attempts):
-    #         new_moves = moves.copy()
-    #         num_to_change = max(1, int(perturbation_strength * len(moves)))
-    #         positions = np.random.choice(len(moves), size=num_to_change, replace=False)
-
-    #         for pos in positions:
-    #             new_moves[pos] = np.random.randint(0, 6)
-
-    #         conformation = self.moves_to_conformation(new_moves)
-    #         if conformation is not None:
-    #             return new_moves
-
-    #     return self.generate_random_valid_moves()
-
     def get_results_summary(self, title):
         """Print summary of optimization results"""
         print("\n" + "=" * 60)
@@ -171,7 +130,6 @@ class PFOBase:
 
         energy = self.calculate_energy(best_conformation)
         hh_contacts = -int(energy)
-        # compactness = self.get_compactness(best_conformation)
 
         fig: Figure = plt.figure(figsize=(12, 10))
         ax: Axes3D = fig.add_subplot(111, projection="3d")  # Type hint as Axes3D
@@ -187,15 +145,12 @@ class PFOBase:
             label="Backbone",
         )
 
-        # Plot residues with colors
         for i, (x, y, z) in enumerate(best_conformation):
             color = "red" if self.sequence[i] == "H" else "blue"
             ax.scatter(
                 x, y, z, c=color, s=300, alpha=0.8, edgecolors="black", linewidth=2
             )
-            ax.text(
-                x + 0.1, y + 0.1, z + 0.1, f"{i}", fontsize=8
-            )  # This is correct for 3D
+            ax.text(x + 0.1, y + 0.1, z + 0.1, f"{i}", fontsize=8)
 
         # Highlight H-H contacts
         contact_pairs: List[Tuple[int, int]] = []
@@ -216,11 +171,10 @@ class PFOBase:
         ax.set_title(
             f"{title}\nSequence: {self.sequence}\n"
             f"Energy: {energy:.1f} | H-H Contacts: {hh_contacts} | "
-            # f"Compactness: {compactness:.2f}"
         )
         ax.set_xlabel("X")
         ax.set_ylabel("Y")
-        ax.set_zlabel("Z")  # Now recognized because ax is Axes3D
+        ax.set_zlabel("Z")
 
         # Set equal aspect ratio
         coords = best_conformation
