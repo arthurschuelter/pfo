@@ -25,8 +25,8 @@ class HP3DParticleSwarm:
         self.n_iterations = 10000
 
         self.options = {
-            "c1":   2.05,     # Cognitive parameter
-            "c2":   2.05,     # Social parameter
+            "c1":   2.50,     # Cognitive parameter
+            "c2":   1.70,     # Social parameter
             "w":    0.70,     # Inertia weight
             "k":    3.00,     # Number of neighbors
             "p":    2.00,     # Minkowski distance

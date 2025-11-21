@@ -25,7 +25,7 @@ class HP3DSimulatedAnnealing(sa):
 
         # Generate initial valid moves if not provided
         if initial_moves is None:
-            initial_moves = self.generate_random_valid_moves()
+            initial_moves = self.generate_random_valid_moves(999999999)
             if initial_moves is None:
                 raise ValueError("Could not generate initial valid conformation")
 
@@ -33,10 +33,16 @@ class HP3DSimulatedAnnealing(sa):
         super(HP3DSimulatedAnnealing, self).__init__(self.state)
 
     def set_parameters(self):
-        self.Tmax = 100.0  # Maximum temperature
-        self.Tmin = 0.01  # Minimum temperature
-        self.steps = 10000  # Reduced for faster comparison
-        self.updates = 500  # Update frequency
+        self.Tmax = 50.0
+        self.Tmin = 0.010
+
+        # Actual
+        # self.steps = 3000000
+        # self.updates = 30000
+
+        # Dev
+        self.steps = 100000
+        self.updates = 1000
 
     def optimize(self):
         return self.anneal()
@@ -82,7 +88,7 @@ class HP3DSimulatedAnnealing(sa):
     # SIMULATED ANNEALING SUPPORT
     # [TO DO] Tests: assert is not None
     def generate_random_valid_moves(
-        self, max_attempts: int = 1000
+        self, max_attempts: int = 10000
     ) -> Optional[np.ndarray]:
         """Generate a random valid move sequence"""
         for attempt in range(max_attempts):

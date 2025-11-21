@@ -6,6 +6,7 @@
 # deactivate
 # --------------------------------------------------------
 import matplotlib.pyplot as plt
+import sys
 from geneticalgorithm2 import geneticalgorithm2 as ga
 
 from pfo_base import PFOBase
@@ -34,14 +35,14 @@ def optimize_ga(sequence: str) -> PFOBase:
 
 def instantiate_ga(hp_model: PFOBase):
     default_params = {
-        "max_num_iteration": 1000,
-        "population_size": 100,
-        "mutation_probability": 0.1,
-        "elit_ratio": 0.01,
-        "parents_portion": 0.3,
-        "crossover_type": "uniform",
+        "max_num_iteration": 12000,
+        "population_size": 250,
+        "mutation_probability": 0.2,
+        "elit_ratio": 0.08,
+        "parents_portion": 0.45,
+        "crossover_type": "two_point",
         "mutation_type": "uniform_by_center",
-        "selection_type": "roulette",
+        "selection_type": "tournament",
         "max_iteration_without_improv": None,
     }
 
@@ -94,25 +95,25 @@ def optimize_pso(sequence):
     return hp_model
 
 
-def compare_algorithms(sequence):
+def compare_algorithms(sequence, label):
     """Compare GA, SA, and PSO performance"""
     print(f"\n{'='*80}")
     print(f"COMPARING ALGORITHMS FOR SEQUENCE: {sequence}")
     print(f"{'='*80}")
 
-    # Run GA
+    # GA
     print("\n" + "-" * 40)
     ga_result = optimize_ga(sequence)
     ga_energy = ga_result.best_energy
     ga_evaluations = ga_result.evaluation_count
 
-    # Run SA
+    # SA
     print("\n" + "-" * 40)
     sa_result = optimize_sa(sequence)
     sa_energy = sa_result.best_energy
     sa_evaluations = sa_result.evaluation_count
 
-    # Run PSO
+    # PSO
     print("\n" + "-" * 40)
     pso_result = optimize_pso(sequence)
     pso_energy = pso_result.best_energy
@@ -122,7 +123,7 @@ def compare_algorithms(sequence):
     print(f"\n{'='*80}")
     print("ALGORITHM COMPARISON SUMMARY")
     print(f"{'='*80}")
-    print(f"Sequence: {sequence}")
+    print(f"Sequence: {label}")
     print(f"Length: {len(sequence)}")
     print()
     print(
@@ -147,15 +148,20 @@ def compare_algorithms(sequence):
 
 
 def main():
+    method = sys.argv[1]
+
     sequences = [
-        "HPHPPHHPHPPHPHHPPHPH",
-        # "HHPPHPPHPPHPPHPPHPPHPPHH",
-        # "PPPHHPPHHPPPPPHHHHHHHPPHHPPPPHHPPHPP"
+        # "PHHHH",
+        "PPPPHPHHHPPPHPHPPHHHPHPHHPHPPPHPHHHHHHPPHHPPHP",
     ]
 
-    for sequence in sequences:
-        # Choose optimization method
-        method = "compare"  # Options: "ga", "sa", "pso", "compare"
+    names = [
+        # "1PLW",
+        "1CRN",
+        # "1ENH",
+    ]
+
+    for i, sequence in enumerate(sequences):
         models = []
         labels = []
 
@@ -172,18 +178,14 @@ def main():
             models.append(pso_model.energy_history)
             labels.append(pso_model.label)
         elif method == "compare":
-            compare_models = compare_algorithms(sequence)
+            compare_models = compare_algorithms(sequence, names[i])
             models = [m.energy_history for m in compare_models]
             labels = [m.label for m in compare_models]
 
-        plot_energy_history(models, labels, sequence)
-
-        # Future algorithms can be added here:
-        # elif method == "de":
-        #     optimize_differential_evolution(sequence)
+        plot_energy_history(models, labels, sequence, names[i])
 
 
-def plot_energy_history(history, labels, sequence):
+def plot_energy_history(history, labels, sequence, name):
     print("history length:", len(history))
     print("labels length:", len(labels))
     print(labels)
@@ -192,7 +194,7 @@ def plot_energy_history(history, labels, sequence):
 
     plt.xlabel("Generation")
     plt.ylabel("Energy")
-    plt.title(f"Convergence for {sequence}")
+    plt.title(f"Convergence for {name}")
     plt.legend(loc="best")
     plt.show()
 
