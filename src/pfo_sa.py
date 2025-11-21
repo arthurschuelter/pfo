@@ -34,14 +34,14 @@ class HP3DSimulatedAnnealing(sa):
 
     def set_parameters(self):
         self.Tmax = 50.0
-        self.Tmin = 0.010
+        self.Tmin = 0.001
 
         # Actual
         # self.steps = 3000000
         # self.updates = 30000
 
         # Dev
-        self.steps = 100000
+        self.steps = 10000
         self.updates = 1000
 
     def optimize(self):

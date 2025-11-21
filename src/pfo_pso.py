@@ -25,13 +25,12 @@ class HP3DParticleSwarm:
         self.n_iterations = 10000
 
         self.options = {
-            "c1":   2.50,     # Cognitive parameter
-            "c2":   1.70,     # Social parameter
-            "w":    0.70,     # Inertia weight
-            "k":    3.00,     # Number of neighbors
-            "p":    2.00,     # Minkowski distance
+            "c1": 2.50,  # Cognitive parameter
+            "c2": 1.70,  # Social parameter
+            "w": 0.70,  # Inertia weight
+            "k": 3.00,  # Number of neighbors
+            "p": 2.00,  # Minkowski distance
         }
-
 
     def fitness_wrapper(self, particles: np.ndarray) -> np.ndarray:
         """
@@ -54,35 +53,41 @@ class HP3DParticleSwarm:
             fitness_values[i] = self.evaluate_moves(discrete_moves)
 
         return fitness_values
-    
-    def continuous_to_discrete_probabilistic(self, continuous_values: np.ndarray) -> np.ndarray:
+
+    def continuous_to_discrete_probabilistic(
+        self, continuous_values: np.ndarray
+    ) -> np.ndarray:
         """
         Map continuous [0, 5] to discrete {0,1,2,3,4,5} probabilistically.
         This preserves gradient information that pure rounding destroys.
-        
-        Example: 
+
+        Example:
             2.7 → 70% chance of 3, 30% chance of 2
             2.3 → 30% chance of 3, 70% chance of 2
-        
+
         This allows PSO's continuous optimization to work on discrete problems!
         """
         # Ensure values are in valid range
         continuous_values = np.clip(continuous_values, 0, 5)
-        
+
         # Get floor and fractional parts
         floor_values = np.floor(continuous_values).astype(int)
         fractions = continuous_values - floor_values
-        
+
         # Probabilistic rounding based on fractional part
         random_vals = np.random.random(len(continuous_values))
-        discrete_moves = np.where(random_vals < fractions, floor_values + 1, floor_values)
-        
+        discrete_moves = np.where(
+            random_vals < fractions, floor_values + 1, floor_values
+        )
+
         # Final clipping to ensure [0, 5]
         discrete_moves = np.clip(discrete_moves, 0, 5)
-        
+
         return discrete_moves
 
-    def continuous_to_discrete_deterministic(self, continuous_values: np.ndarray) -> np.ndarray:
+    def continuous_to_discrete_deterministic(
+        self, continuous_values: np.ndarray
+    ) -> np.ndarray:
         """
         Deterministic mapping for final best solution extraction.
         Uses standard rounding.
@@ -90,7 +95,6 @@ class HP3DParticleSwarm:
         discrete_moves = np.round(continuous_values).astype(int)
         discrete_moves = np.clip(discrete_moves, 0, 5)
         return discrete_moves
-
 
     def evaluate_moves(self, moves: np.ndarray) -> float:
         """

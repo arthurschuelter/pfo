@@ -5,8 +5,10 @@
 # pip3 freeze > requirements.txt
 # deactivate
 # --------------------------------------------------------
-import matplotlib.pyplot as plt
 import sys
+
+import matplotlib.pyplot as plt
+import numpy as np
 from geneticalgorithm2 import geneticalgorithm2 as ga
 
 from pfo_base import PFOBase
@@ -182,20 +184,32 @@ def main():
             models = [m.energy_history for m in compare_models]
             labels = [m.label for m in compare_models]
 
-        plot_energy_history(models, labels, sequence, names[i])
+        plot_energy_history(models, labels, names[i])
 
 
-def plot_energy_history(history, labels, sequence, name):
-    print("history length:", len(history))
-    print("labels length:", len(labels))
-    print(labels)
+def plot_energy_history(history, labels, name):
     for h, l in zip(history, labels):
+        h[0] = 0
         plt.plot(h, label=l)
 
     plt.xlabel("Generation")
     plt.ylabel("Energy")
     plt.title(f"Convergence for {name}")
     plt.legend(loc="best")
+
+    y_min = min(min(h) for h in history)
+    y_max = 0
+    plt.ylim(y_min - 1, y_max)
+    plt.axhline(y=y_min, linestyle="--", linewidth=1, alpha=0.7)
+
+    ticks = plt.gca().get_yticks()
+
+    if y_min not in ticks:
+        ticks = np.append(ticks, y_min)
+
+    ticks = np.sort(ticks)
+    plt.gca().set_yticks(ticks)
+
     plt.show()
 
 
