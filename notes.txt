@@ -1,0 +1,45 @@
+Notes:
+
+DEV =============================
+1PLW:
+	- GA: 
+		- Objective: -1.0
+		- Used time: 33.80 seconds
+
+	- SA: 
+		- Objective: -1.0
+		- Used time: 0.33 seconds
+
+	- PSO: 
+		- Objective: -1.0
+		- Used time: 33.00 seconds
+
+1CRN:
+	- GA: 
+		- Objective: -21.0
+		- Used time: 61.80 seconds
+
+	- SA: 
+		- Objective: -22.0
+		- Used time: 54.22 seconds
+
+	- PSO: 
+		- Objective: -10.0
+		- Used time: 38.17 seconds
+
+
+
+1ENH:
+	- GA: 
+		- Objective: -13.0
+		- Used time: 57.00 seconds
+
+	- SA: 
+		- Objective: -14.0
+		- Used time: 149.35 seconds
+
+	- PSO: 
+		- Objective: -2
+		- Used time: 38.40 seconds
+
+PROD =============================
