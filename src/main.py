@@ -21,6 +21,8 @@ from pfo_sa import HP3DSimulatedAnnealing
 
 def optimize_ga(sequence: str) -> PFOBase:
     print("Optimizing with Genetic Algorithm...")
+    start = time.time()
+
     hp_model = PFOBase(sequence, "Genetic Algorithm")
     hp_model.print_header()
     ga_model = instantiate_ga(hp_model)
@@ -28,12 +30,14 @@ def optimize_ga(sequence: str) -> PFOBase:
     ga_model.run(function=hp_model.fitness_function, no_plot=True)
     hp_model.energy_history = ga_model.report
 
+    end = time.time()
     if hp_model.best_conformation is not None:
         hp_model.visualize_best("Best 3D HP Conformation (GA)")
 
     hp_model.get_results_summary("GENETIC ALGORITHM")
 
-    return hp_model
+    execution_time = end - start
+    return hp_model, execution_time
 
 
 def instantiate_ga(hp_model: PFOBase):
@@ -73,12 +77,13 @@ def optimize_sa(sequence):
     hp_model.best_energy = sa_solver.best_energy_value
     hp_model.energy_history = sa_solver.energy_history
 
-    print(f"Used time: {(time.time() - start):.2f} seconds")
+    end = time.time()
     if sa_solver.best_conformation is not None:
         hp_model.visualize_best("Best 3D HP Conformation (SA)")
         pass
 
-    return hp_model
+    execution_time = end - start
+    return hp_model, execution_time
 
 
 def optimize_pso(sequence):
@@ -96,34 +101,35 @@ def optimize_pso(sequence):
     hp_model.best_energy = pso_solver.best_energy_value
     hp_model.energy_history = pso_solver.energy_history
 
-    print(f"Used time: {(time.time() - start):.2f} seconds")
+    end = time.time()
     if pso_solver.best_conformation is not None:
         hp_model.visualize_best("Best 3D HP Conformation (PSO)")
 
-    return hp_model
+    execution_time = end - start
+    return hp_model, execution_time
 
 
 def compare_algorithms(sequence, label):
     """Compare GA, SA, and PSO performance"""
     print(f"\n{'='*80}")
-    print(f"COMPARING ALGORITHMS FOR SEQUENCE: {sequence}")
+    print(f"COMPARING ALGORITHMS FOR SEQUENCE: {label} ({sequence})")
     print(f"{'='*80}")
 
     # GA
     print("\n" + "-" * 40)
-    ga_result = optimize_ga(sequence)
+    ga_result, ga_time = optimize_ga(sequence)
     ga_energy = ga_result.best_energy
     ga_evaluations = ga_result.evaluation_count
 
     # SA
     print("\n" + "-" * 40)
-    sa_result = optimize_sa(sequence)
+    sa_result, sa_time = optimize_sa(sequence)
     sa_energy = sa_result.best_energy
     sa_evaluations = sa_result.evaluation_count
 
     # PSO
     print("\n" + "-" * 40)
-    pso_result = optimize_pso(sequence)
+    pso_result, pso_time = optimize_pso(sequence)
     pso_energy = pso_result.best_energy
     pso_evaluations = pso_result.evaluation_count
 
@@ -135,13 +141,13 @@ def compare_algorithms(sequence, label):
     print(f"Length: {len(sequence)}")
     print()
     print(
-        f"{'Algorithm':<15} {'Best Energy':<12} {'H-H Contacts':<12} {'Evaluations':<12}"
+        f"{'Algorithm':<15} {'Best Energy':<12} {'H-H Contacts':<12} {'Evaluations':<12} {'Execution Time':<16}"
     )
     print("-" * 80)
-    print(f"{'GA':<15} {ga_energy:<12.2f} {-int(ga_energy):<12} {ga_evaluations:<12}")
-    print(f"{'SA':<15} {sa_energy:<12.2f} {-int(sa_energy):<12} {sa_evaluations:<12}")
+    print(f"{'GA':<15} {ga_energy:<12.2f} {-int(ga_energy):<12} {ga_evaluations:<12} {ga_time:<16.2f}")
+    print(f"{'SA':<15} {sa_energy:<12.2f} {-int(sa_energy):<12} {sa_evaluations:<12} {sa_time:<16.2f}")
     print(
-        f"{'PSO':<15} {pso_energy:<12.2f} {-int(pso_energy):<12} {pso_evaluations:<12}"
+        f"{'PSO':<15} {pso_energy:<12.2f} {-int(pso_energy):<12} {pso_evaluations:<12} {pso_time:<16.2f}"
     )
     print()
 
@@ -161,13 +167,17 @@ def main():
     sequences = [
         # "PHHHH",
         # "PPPPHPHHHPPPHPHPPHHHPHPHHPHPPPHPHHHHHHPPHHPPHP",
-        "PHPPHHPPPPHHPHPPPHPPPPPHPPPPPPPHPPPHHHPPHPHPHHHPPPPHPH",
+        # "PHPPHHPPPPHHPHPPPHPPPPPHPPPPPPPHPPPHHHPPHPHPHHHPPPPHPH",
+        "HPHPPHHPHPPHPHHPPHPH",
+        "HHPPHPPHPPHPPHPPHPPHPPHH",
     ]
 
     names = [
         # "1PLW",
         # "1CRN",
-        "1ENH",
+        # "1ENH",
+        "3d1",
+        "3d2",
     ]
 
     for i, sequence in enumerate(sequences):
