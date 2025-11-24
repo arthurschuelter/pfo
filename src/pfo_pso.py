@@ -21,15 +21,17 @@ class HP3DParticleSwarm:
         self.get_results_summary = pfo_base.get_results_summary
 
     def set_parameters(self):
-        self.n_particles = 300
-        self.n_iterations = 10000
+        self.n_particles = 500
+        self.n_iterations = 20000
+        # self.n_particles = 300
+        # self.n_iterations = 10000
 
         self.options = {
-            "c1": 2.50,  # Cognitive parameter
-            "c2": 1.70,  # Social parameter
+            "c1": 2.50, # Cognitive parameter
+            "c2": 1.20, # Social parameter
             "w": 0.70,  # Inertia weight
-            "k": 3.00,  # Number of neighbors
-            "p": 2.00,  # Minkowski distance
+            "k": 5,     # Number of neighbors
+            "p": 2,     # Minkowski distance
         }
 
     def fitness_wrapper(self, particles: np.ndarray) -> np.ndarray:
@@ -47,8 +49,8 @@ class HP3DParticleSwarm:
         fitness_values = np.zeros(n_particles)
 
         for i in range(n_particles):
-            discrete_moves = self.continuous_to_discrete_deterministic(particles[i])
-            # discrete_moves = self.continuous_to_discrete_probabilistic(particles[i])
+            # discrete_moves = self.continuous_to_discrete_deterministic(particles[i])
+            discrete_moves = self.continuous_to_discrete_probabilistic(particles[i])
 
             fitness_values[i] = self.evaluate_moves(discrete_moves)
 
@@ -67,10 +69,8 @@ class HP3DParticleSwarm:
 
         This allows PSO's continuous optimization to work on discrete problems!
         """
-        # Ensure values are in valid range
         continuous_values = np.clip(continuous_values, 0, 5)
 
-        # Get floor and fractional parts
         floor_values = np.floor(continuous_values).astype(int)
         fractions = continuous_values - floor_values
 
@@ -115,16 +115,13 @@ class HP3DParticleSwarm:
             # Invalid conformation - return high penalty
             return 0
 
-        # Calculate energy
         energy = self.pfo_base.calculate_energy(conformation)
 
-        # Update best solution
         if energy < self.best_energy_value:
             self.best_energy_value = energy
             self.best_conformation = conformation.copy()
             self.best_moves = moves.copy()
 
-            # Update base model's best solution
             if energy < self.pfo_base.best_energy:
                 self.pfo_base.best_energy = energy
                 self.pfo_base.best_conformation = conformation.copy()
@@ -143,11 +140,18 @@ class HP3DParticleSwarm:
         bounds = (np.zeros(dimensions), np.full(dimensions, 5))
 
         # Initialize optimizer
-        optimizer = ps.single.GlobalBestPSO(
+        # optimizer = ps.single.GlobalBestPSO(
+        #     n_particles=self.n_particles,
+        #     dimensions=dimensions,
+        #     options=self.options,
+        #     bounds=bounds,
+        # )
+        optimizer = ps.single.LocalBestPSO(
             n_particles=self.n_particles,
             dimensions=dimensions,
             options=self.options,
             bounds=bounds,
+            velocity_clamp=(-1.0, 1.0)
         )
 
         # Run optimization with callback to track history
@@ -162,10 +166,10 @@ class HP3DParticleSwarm:
         best_moves = np.round(pos).astype(int)
         best_moves = np.clip(best_moves, 0, 5)
 
-        print("\nPSO Optimization Complete!")
-        print(f"Best Energy: {self.best_energy_value}")
-        print(f"H-H Contacts: {-int(self.best_energy_value)}")
-        print(f"Total Evaluations: {self.pfo_base.evaluation_count}")
+        # print("\nPSO Optimization Complete!")
+        # print(f"Best Energy: {self.best_energy_value}")
+        # print(f"H-H Contacts: {-int(self.best_energy_value)}")
+        # print(f"Total Evaluations: {self.pfo_base.evaluation_count}")
 
         return best_moves, self.best_energy_value
 

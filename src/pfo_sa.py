@@ -37,12 +37,13 @@ class HP3DSimulatedAnnealing(sa):
         self.Tmin = 0.001
 
         # Actual
-        # self.steps = 3000000
-        # self.updates = 30000
+        self.steps = 2000000
+        self.updates = 20000
+        self.save_every = 100
 
         # Dev
-        self.steps = 10000
-        self.updates = 1000
+        # self.steps = 10000
+        # self.updates = 10000
 
     def optimize(self):
         return self.anneal()
@@ -67,7 +68,8 @@ class HP3DSimulatedAnnealing(sa):
                     self.pfo_base.best_conformation = conformation.copy()
 
         # [TO DO] update energy history method + tests
-        self.energy_history.append(self.best_energy_value)
+        if self.iteration_count % self.save_every == 0:
+            self.energy_history.append(self.best_energy_value)
 
         return energy_val
 
@@ -120,7 +122,7 @@ class HP3DSimulatedAnnealing(sa):
             if conformation is not None:
                 return new_moves
 
-        return self.generate_random_valid_moves()
+        return self.generate_random_valid_moves(100)
 
     def copy_state(self, state):
         """Return copy of state (required by simanneal)"""

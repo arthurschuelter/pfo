@@ -10,7 +10,7 @@ from mpl_toolkits.mplot3d import Axes3D
 
 
 class PFOBase:
-    def __init__(self, sequence: str, label: str = ""):
+    def __init__(self, sequence: str, label: str = "", seq_name: str = "", algo: str = ""):
         """
         Initialize 3D HP lattice model for genetic algorithm
 
@@ -21,6 +21,8 @@ class PFOBase:
         self.length = len(sequence)
         self.evaluation_count = 0
         self.label = label
+        self.seq_name = seq_name
+        self.algo = algo
 
         self.best_conformation: Any = None
         self.best_energy = float("inf")
@@ -213,10 +215,13 @@ class PFOBase:
             ax.legend(handles=[h_scatter, p_scatter])
 
         plt.tight_layout()
-        plt.show()
 
-        print(f"H-H contact pairs: {contact_pairs}")
-        print(f"Total evaluations: {self.evaluation_count}")
+        save_path = f"./img/0.benchmark/{self.seq_name}-{self.algo}.png"
+        plt.savefig(save_path)
+        plt.close()
+
+        # print(f"H-H contact pairs: {contact_pairs}")
+        # print(f"Total evaluations: {self.evaluation_count}")
 
     def print_header(self) -> None:
         print(f"Sequence: {self.sequence}")
